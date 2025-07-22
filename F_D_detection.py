@@ -4,16 +4,11 @@ import pandas as pd
 import math
 import mediapipe as mp
 import winsound
-# SET THRESHOLD VALUES OF EAR AND MAR
+
    
 EAR_THRESHOLD = 0.25
 MAR_THRESHOLD = 0.5
 
-mp_face_mesh = mp.solutions.face_mesh
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-
-#specific points1
 LEFT_EYE_POINTS = [33, 160, 158, 133, 153, 144] 
 
 RIGHT_EYE_POINTS = [362, 387, 385, 263, 373, 380]
@@ -21,13 +16,11 @@ RIGHT_EYE_POINTS = [362, 387, 385, 263, 373, 380]
 
 MOUTH_POINTS = [78, 81, 13, 311, 308, 324, 318] 
  
-#Euclidean distance for facial landmarks
 
 def Euclidean_dist(point1 , point2):
     return math.sqrt((point2[0]-point1[0])**2 +(point2[1]-point1[1])**2)
 
-#Eye aspect ratio
-# eye_landmark is array of size 6 with each point as (x,y)
+
 
 def Eye_Aspect_Ratio(eye_landmark):
     VERTICAL_DIST1 = Euclidean_dist(eye_landmark[1] , eye_landmark[5])
@@ -39,7 +32,6 @@ def Eye_Aspect_Ratio(eye_landmark):
 
     return EAR
 
-#Mouth aspect ratio 
 
 def Mouth_Aspect_Ratio(mouth_landmark):
 
@@ -53,7 +45,7 @@ def Mouth_Aspect_Ratio(mouth_landmark):
 
     return MAR
 
-#Executive function
+
 
 def faceDETECTOR(cam_opt):
     capture = cv.VideoCapture(cam_opt)
@@ -80,7 +72,7 @@ def faceDETECTOR(cam_opt):
     ) as face_mesh:
 
       while True:
-        #ret is boolean and frame is numpy array of image and read() returns tuple as takes two arguments
+        
         ret , frame  = capture.read()
         frame_count += 1
 
@@ -96,7 +88,7 @@ def faceDETECTOR(cam_opt):
 
         height , width = frame.shape[:2]
 
-    #    frame = cv.cvtColor(frame , cv.COLOR_RGB2BGR)
+
 
         if process_Frame.multi_face_landmarks:
             for point in process_Frame.multi_face_landmarks:
@@ -112,18 +104,18 @@ def faceDETECTOR(cam_opt):
 
                 landmarks = np.array(landmarks)
 
-            #for left and right eye will now store the specified landmark point in the landmarks list out of the 428 facial landmark point according to the mediapipe and set its own list 
+
 
                 left_eye = [landmarks[i] for i in LEFT_EYE_POINTS]
                 right_eye = [landmarks[i] for i in RIGHT_EYE_POINTS]
 
                 mouth = [landmarks[i] for i in MOUTH_POINTS]
 
-            #calc ear for both the eyes 
+            
                 ear_left_eye =  Eye_Aspect_Ratio(left_eye)
                 ear_right_eye = Eye_Aspect_Ratio(right_eye)
 
-            #avg ear for both the eyes
+            
                 avg_ear = (ear_left_eye + ear_right_eye)/2.0
 
                 mar_mouth = Mouth_Aspect_Ratio(mouth)
